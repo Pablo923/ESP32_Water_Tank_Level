@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "tm1637.h": "c"
+    },
+    "idf.port": "/dev/tty.usbserial-0001"
+}
