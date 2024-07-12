@@ -404,6 +404,11 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
+  include("/Users/pablo/Documents/Repositorios/Pablo/ESP32_Water_Tank_Level/build/esp-idf/tm1637/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
   include("/Users/pablo/Documents/Repositorios/Pablo/ESP32_Water_Tank_Level/build/esp-idf/main/cmake_install.cmake")
 endif()
 

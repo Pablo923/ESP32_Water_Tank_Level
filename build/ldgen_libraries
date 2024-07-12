@@ -59,4 +59,5 @@
 /Users/pablo/Documents/Repositorios/Pablo/ESP32_Water_Tank_Level/build/esp-idf/perfmon/libperfmon.a
 /Users/pablo/Documents/Repositorios/Pablo/ESP32_Water_Tank_Level/build/esp-idf/spiffs/libspiffs.a
 /Users/pablo/Documents/Repositorios/Pablo/ESP32_Water_Tank_Level/build/esp-idf/wifi_provisioning/libwifi_provisioning.a
+/Users/pablo/Documents/Repositorios/Pablo/ESP32_Water_Tank_Level/build/esp-idf/tm1637/libtm1637.a
 /Users/pablo/Documents/Repositorios/Pablo/ESP32_Water_Tank_Level/build/esp-idf/main/libmain.a
