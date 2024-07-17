@@ -29,16 +29,14 @@ void app_main(void)
 
     while(1)
     {
-        // Test display numbers
-		for (int x = 0; x < 16; ++x)
-        {
-            // Print distance in cm from ultrasonic sensor
-            float distance = measure_distance(&sensor);
-            ESP_LOGI(TAG, "Distance: %.2f cm", distance);
+        // Print distance in cm from ultrasonic sensor
+        float distance = measure_distance(&sensor);
+        ESP_LOGI(TAG, "Distance: %.2f cm", distance);
 
-            // Display on TM1637
-            tm1637_display_number(display, (uint16_t)x);
-            vTaskDelay(500 / portTICK_PERIOD_MS);
-		}
+        // Display distance on TM1637 without decimals
+        tm1637_display_number(display, (uint16_t)distance);
+
+        // Delay for 5 second
+        vTaskDelay(5000 / portTICK_PERIOD_MS); 
     }
 }
