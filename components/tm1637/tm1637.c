@@ -54,6 +54,26 @@ void tm1637_display_number(tm1637_led_t* led, uint16_t number) {
     tm1637_stop(led);
 }
 
+void tm1637_set_segment(tm1637_led_t *led, uint8_t digit_index, uint8_t segments)
+{
+    tm1637_start(led);
+    tm1637_write_byte(led, TM1637_ADDR_FIXED);
+    tm1637_stop(led);
+
+    tm1637_start(led);
+    tm1637_write_byte(led, digit_index | 0xC0);
+    tm1637_write_byte(led, segments);
+    tm1637_stop(led);
+}
+
+void tm1637_set_lines(tm1637_led_t *led)
+{
+    tm1637_set_segment(led, 0, SEG_G);
+    tm1637_set_segment(led, 1, SEG_G);
+    tm1637_set_segment(led, 2, SEG_G);
+    tm1637_set_segment(led, 3, SEG_G);
+}
+
 static void tm1637_start(tm1637_led_t* led) {
     gpio_set_level(led->dio, 0);
     vTaskDelay(1 / portTICK_PERIOD_MS);
