@@ -31,10 +31,21 @@ void app_main(void)
     {
         // Print distance in cm from ultrasonic sensor
         float distance = measure_distance(&sensor);
-        ESP_LOGI(TAG, "Distance: %.2f cm", distance);
+        // ESP_LOGI(TAG, "Distance: %.2f cm", distance);
 
-        // Display distance on TM1637 without decimals
-        tm1637_display_number(display, (uint16_t)distance);
+        // Convert distance in level of water (lts)
+        float water_level = distance_to_level(distance);
+        ESP_LOGI(TAG, "Level of Water: %.2f lts", water_level);
+
+        if (water_level >= 0 && water_level <= MAX_WATER_LEVEL)
+        {
+            // Display water level in liters on TM1637
+            tm1637_display_number(display, (uint16_t)water_level);
+        }
+        else{
+            ESP_LOGI(TAG, "Error Measuring Water Level\n");
+            tm1637_set_lines(display);
+        }
 
         // Delay for 5 second
         vTaskDelay(5000 / portTICK_PERIOD_MS); 

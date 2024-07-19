@@ -30,3 +30,11 @@ float measure_distance(ultrasonic_sensor_t *sensor)
     float distance = (end - start) * SOUND_SPEED_CM_US / 2;
     return distance;
 } 
+
+uint32_t distance_to_level(uint32_t distance)
+{
+    // Convert distance in level of water (lts)
+    uint32_t level = (distance * (-31.65)) + 5893.98;
+
+    return level;
+}
