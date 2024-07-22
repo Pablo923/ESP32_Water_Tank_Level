@@ -1,3 +1,3 @@
 idf_component_register(SRCS "main.c"
                     INCLUDE_DIRS "."
-                    REQUIRES tm1637 ultrasonic)
+                    REQUIRES wifi tm1637 ultrasonic)

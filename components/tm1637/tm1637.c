@@ -20,6 +20,7 @@ void tm1637_init(tm1637_led_t *led)
     gpio_set_direction(led->dio_pin, GPIO_MODE_OUTPUT);
     gpio_set_level(led->clk_pin, 1);
     gpio_set_level(led->dio_pin, 1);
+    tm1637_set_brightness(led, 7);
 }
 
 void tm1637_display_number(tm1637_led_t *led, int number)
@@ -60,6 +61,14 @@ void tm1637_set_lines(tm1637_led_t *led)
     tm1637_set_segment(led, 1, SEG_G);
     tm1637_set_segment(led, 2, SEG_G);
     tm1637_set_segment(led, 3, SEG_G);
+}
+
+void tm1637_set_brightness(tm1637_led_t* led, uint8_t brightness)
+{
+    if (brightness > 7) brightness = 7;
+    tm1637_start(led);
+    tm1637_write_byte(led, 0x87 + brightness);
+    tm1637_stop(led);
 }
 
 static void tm1637_start(tm1637_led_t *led)
