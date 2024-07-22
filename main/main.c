@@ -22,15 +22,8 @@ void app_main(void)
 {
     ESP_LOGI(TAG, "Initializing...");
 
-    ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
-    esp_err_t ret = example_wifi_connect(EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
-    
-    if (ret == ESP_OK) {
-        ESP_LOGI(TAG, "WiFi Connected Successfully");
-        // Add your main application code here
-    } else {
-        ESP_LOGE(TAG, "WiFi Connection Failed");
-    }
+    // Initialize Wifi
+    example_wifi_connect(EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
 
     // Initialize HC-SR04 sensor
     ultrasonic_sensor_t sensor = {.trigger_pin = ULTRASONIC_TRIG_PIN, .echo_pin = ULTRASONIC_ECHO_PIN};
