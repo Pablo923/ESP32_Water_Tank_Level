@@ -7,14 +7,16 @@
 #include "ultrasonic.h"
 #include "tm1637.h"
 #include "wifi.h"
+#include "mqtt_client.h"
+#include "mqtt_connection.h"
 
 #define TM1637_CLK_PIN       GPIO_NUM_18
 #define TM1637_DIO_PIN       GPIO_NUM_19
 #define ULTRASONIC_ECHO_PIN  GPIO_NUM_25
 #define ULTRASONIC_TRIG_PIN  GPIO_NUM_26
 
-#define EXAMPLE_ESP_WIFI_SSID   "****"
-#define EXAMPLE_ESP_WIFI_PASS   "****"
+#define EXAMPLE_ESP_WIFI_SSID   "***"
+#define EXAMPLE_ESP_WIFI_PASS   "***"
 
 #define TAG "WATERTANK_APP"
 
@@ -23,7 +25,11 @@ void app_main(void)
     ESP_LOGI(TAG, "Initializing...");
 
     // Initialize Wifi
-    example_wifi_connect(EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
+    wifi_connect(EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
+
+    // Init MQTT client and Start
+    mqtt_client_init();
+    mqtt_client_start();
 
     // Initialize HC-SR04 sensor
     ultrasonic_sensor_t sensor = {.trigger_pin = ULTRASONIC_TRIG_PIN, .echo_pin = ULTRASONIC_ECHO_PIN};
@@ -45,6 +51,11 @@ void app_main(void)
             // Display water level in liters on TM1637
             tm1637_display_number(&display, (uint16_t)water_level);
             ESP_LOGI(TAG, "Level of Water: %.2f lts", water_level);
+
+            // Publish to MQTT
+            char mqtt_data[20];
+            snprintf(mqtt_data, sizeof(mqtt_data), "%.2f", water_level);
+            mqtt_client_publish("/ESP32_Estanque_Casa/Nivel", mqtt_data, 0, 1, 1);
         }
         else{
             ESP_LOGI(TAG, "Error Measuring Water Level\n");

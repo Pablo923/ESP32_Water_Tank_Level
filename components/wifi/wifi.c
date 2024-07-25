@@ -1,4 +1,3 @@
-#include "wifi.h"
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -10,6 +9,7 @@
 #include "nvs_flash.h"
 #include "lwip/err.h"
 #include "lwip/sys.h"
+#include "wifi.h"
 
 #define EXAMPLE_ESP_MAXIMUM_RETRY  5
 
