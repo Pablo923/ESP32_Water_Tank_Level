@@ -7,6 +7,8 @@
 #include "config.h"
 #include "mqtt_client.h"
 
+#define MQTT_BROKER_URL "mqtt://mqtt.eclipseprojects.io"
+
 static const char *TAG = "MQTT_CLIENT";
 static esp_mqtt_client_handle_t client;
 
@@ -70,7 +72,6 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
 static esp_err_t mqtt_client_init_internal(void)
 {
-    // const char *mqtt_broker_url = config_get_mqtt_broker_url();
     const esp_mqtt_client_config_t mqtt_cfg = {
         .broker.address.uri = "mqtt://mqtt.eclipseprojects.io",
     };
