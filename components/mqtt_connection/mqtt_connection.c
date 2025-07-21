@@ -4,7 +4,7 @@
 #include <string.h>
 #include "esp_system.h"
 #include "esp_log.h"
-#include "config.h"
+// #include "config.h"
 #include "mqtt_client.h"
 
 #define MQTT_BROKER_URL "mqtt://mqtt.eclipseprojects.io"
