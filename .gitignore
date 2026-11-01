@@ -2,3 +2,7 @@ build/
 
 # For Mac
 .DS_Store
+
+# Local ESP-IDF and VS Code settings
+/sdkconfig
+/.vscode/settings.json
