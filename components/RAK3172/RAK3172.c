@@ -1,5 +1,8 @@
 #include "driver/gpio.h"
 #include "driver/uart.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include <stdio.h>
 #include "string.h"
 #include "UART.h"
 #include "RAK3172.h"
@@ -19,12 +22,32 @@ void init_RAK3172(void) {
     uart_driver_install(UART_RAK3172_NUM, BUF_SIZE * 2, 0, 0, NULL, 0);
     uart_param_config(UART_RAK3172_NUM, &uart_config);
     uart_set_pin(UART_RAK3172_NUM, RAK3172_TXD_PIN, RAK3172_RXD_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+
+    // Configure RAK3172 to P2P mode
+    RAK3172_initP2P();
 }
 
 void RAK3172_sendCommand(const char* command)
 {
     uart_write_bytes(UART_RAK3172_NUM, command, strlen(command));
     uart_write_bytes(UART_RAK3172_NUM, "\r\n", 2);
+}
+
+void RAK3172_initP2P(void)
+{
+    char p2p_command[48];
+
+    // Switch to P2P mode. The module restarts if its mode changes.
+    RAK3172_sendCommand("AT+NWM=0");
+    vTaskDelay(pdMS_TO_TICKS(2000));
+
+    snprintf(p2p_command, sizeof(p2p_command), "AT+P2P=%s", RAK3172_P2P_CONFIG);
+    RAK3172_sendCommand(p2p_command);
+    vTaskDelay(pdMS_TO_TICKS(200));
+
+    // Ensure the transmitter is not left in receive mode.
+    RAK3172_sendCommand("AT+PRECV=0");
+    vTaskDelay(pdMS_TO_TICKS(100));
 }
 
 void uartRAK3172_receiveTask(void *pvParameters)
