@@ -1,0 +1,19 @@
+[
+    {
+        "key": "cmd+shift+b",
+        "command": "workbench.action.tasks.build",
+        "when": "workspaceFolderCount > 0"
+    },
+    {
+        "key": "cmd+alt+f",
+        "command": "workbench.action.tasks.runTask",
+        "args": "ESP32 Flash",
+        "when": "workspaceFolderCount > 0"
+    },
+    {
+        "key": "cmd+alt+m",
+        "command": "workbench.action.tasks.runTask",
+        "args": "ESP32 Monitor",
+        "when": "workspaceFolderCount > 0"
+    }
+]

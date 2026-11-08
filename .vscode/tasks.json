@@ -1,0 +1,58 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "ESP32 Build",
+            "type": "shell",
+            "command": "make",
+            "args": ["-B", "build"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": [],
+            "isBackground": false
+        },
+        {
+            "label": "ESP32 Flash",
+            "type": "shell",
+            "command": "make",
+            "args": ["flash", "PORT=${input:esp32Port}"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": [],
+            "isBackground": false
+        },
+        {
+            "label": "ESP32 Monitor",
+            "type": "shell",
+            "command": "make",
+            "args": ["monitor", "PORT=${input:esp32Port}"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": [],
+            "isBackground": false
+        }
+    ],
+    "inputs": [
+        {
+            "id": "esp32Port",
+            "type": "promptString",
+            "description": "Puerto serie de la placa ESP32 (por ejemplo /dev/cu.usbserial-XXXX o COM3)"
+        }
+    ]
+}
