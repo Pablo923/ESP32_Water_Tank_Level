@@ -62,6 +62,23 @@ en modo de descarga, mantén presionado **BOOT** mientras comienza la grabación
 
 `make erase-flash PORT=...` borra toda la memoria flash de la placa.
 
+## Formato del payload LoRa
+
+El payload binario queda definido en 9 bytes, en este orden. Los valores
+multibyte se transmiten en little-endian:
+
+| Bytes | Campo | Tipo y unidad | Valor sin dato |
+| --- | --- | --- | --- |
+| 0 | ID | `uint8`, identificador del dispositivo (0–255) | No aplica |
+| 1–4 | Nivel de agua | `float32`, litros | No definido |
+| 5–6 | Temperatura | `int16`, centésimas de °C (por ejemplo, 2350 = 23,50 °C) | `-32768` (`0x8000`) |
+| 7–8 | Humedad | `uint16`, centésimas de %RH (por ejemplo, 5432 = 54,32 %RH) | `65535` (`0xFFFF`) |
+
+El firmware todavía transmite el payload anterior de 4 bytes con el nivel de
+agua. La lectura de temperatura/humedad y la emisión de este formato de 9 bytes
+quedan para cuando se integren esas fuentes de datos; los marcadores indicados
+permiten representar campos sin lectura en esa implementación.
+
 ## VS Code
 
 Las tareas de VS Code usan `make`; el Makefile carga automáticamente ESP-IDF
