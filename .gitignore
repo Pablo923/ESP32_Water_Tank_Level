@@ -6,3 +6,6 @@ build/
 # Local ESP-IDF and VS Code settings
 /sdkconfig
 /.vscode/settings.json
+
+# Verification evidence (verify-watertank skill)
+/.verify-artifacts/
