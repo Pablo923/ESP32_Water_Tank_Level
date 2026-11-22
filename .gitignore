@@ -9,3 +9,6 @@ build/
 
 # Verification evidence (verify-watertank skill)
 /.verify-artifacts/
+
+# Local Claude Code settings
+/.claude/settings.local.json
