@@ -74,10 +74,10 @@ multibyte se transmiten en little-endian:
 | 5–6 | Temperatura | `int16`, centésimas de °C (por ejemplo, 2350 = 23,50 °C) | `-32768` (`0x8000`) |
 | 7–8 | Humedad | `uint16`, centésimas de %RH (por ejemplo, 5432 = 54,32 %RH) | `65535` (`0xFFFF`) |
 
-El firmware todavía transmite el payload anterior de 4 bytes con el nivel de
-agua. La lectura de temperatura/humedad y la emisión de este formato de 9 bytes
-quedan para cuando se integren esas fuentes de datos; los marcadores indicados
-permiten representar campos sin lectura en esa implementación.
+El firmware envía este formato con `ID = 0x01`. La temperatura y la humedad se
+leen de un DHT11 en GPIO27; si la lectura falla, esos campos llevan los
+marcadores de "sin dato". Si el nivel de agua está fuera de rango no se envía
+ningún paquete.
 
 ## VS Code
 

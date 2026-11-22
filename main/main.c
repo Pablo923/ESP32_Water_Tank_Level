@@ -11,17 +11,42 @@
 // #include "mqtt_client.h"
 // #include "mqtt_connection.h"
 #include "RAK3172.h"
+#include "dht11.h"
 #include "UART.h"
 
 #define TM1637_CLK_PIN       GPIO_NUM_18
 #define TM1637_DIO_PIN       GPIO_NUM_19
 #define ULTRASONIC_ECHO_PIN  GPIO_NUM_25
 #define ULTRASONIC_TRIG_PIN  GPIO_NUM_26
+#define DHT11_DATA_PIN       GPIO_NUM_27
+
+// LoRa payload (see README): ID, level float32, temperature int16, humidity uint16, little-endian.
+#define DEVICE_ID               0x01
+#define LORA_PAYLOAD_SIZE       9
+#define TEMPERATURE_NO_DATA     INT16_MIN   // 0x8000
+#define HUMIDITY_NO_DATA        UINT16_MAX  // 0xFFFF
 
 // #define EXAMPLE_ESP_WIFI_SSID   ""
 // #define EXAMPLE_ESP_WIFI_PASS   ""
 
 #define TAG "WATERTANK_APP"
+
+static void build_lora_payload(uint8_t payload[LORA_PAYLOAD_SIZE], float water_level,
+                               int16_t temperature_c100, uint16_t humidity_rh100)
+{
+    uint32_t level_bits;
+    memcpy(&level_bits, &water_level, sizeof(level_bits));
+
+    payload[0] = DEVICE_ID;
+    payload[1] = level_bits & 0xFF;
+    payload[2] = (level_bits >> 8) & 0xFF;
+    payload[3] = (level_bits >> 16) & 0xFF;
+    payload[4] = (level_bits >> 24) & 0xFF;
+    payload[5] = (uint16_t)temperature_c100 & 0xFF;
+    payload[6] = ((uint16_t)temperature_c100 >> 8) & 0xFF;
+    payload[7] = humidity_rh100 & 0xFF;
+    payload[8] = (humidity_rh100 >> 8) & 0xFF;
+}
 
 void app_main(void)
 {
@@ -37,6 +62,10 @@ void app_main(void)
     // Initialize TM1637 display
     tm1637_led_t display = {.clk_pin = TM1637_CLK_PIN, .dio_pin = TM1637_DIO_PIN};
     tm1637_init(&display);
+
+    // Initialize DHT11 temperature/humidity sensor
+    dht11_sensor_t dht11 = {.data_pin = DHT11_DATA_PIN};
+    dht11_init(&dht11);
 
     // Create Task to Receive Message by UART
     xTaskCreate(uartSerial_receiveTask, "uartSerial_receiveTask", 2048, NULL, 10, NULL);
@@ -56,14 +85,30 @@ void app_main(void)
             tm1637_display_number(&display, (uint16_t)water_level);
             ESP_LOGI(TAG, "Level of Water: %.2f lts", water_level);
 
-            uint8_t payload[4];
-            char at_command[64];
-            memcpy(payload, &water_level, sizeof(float));
+            int16_t temperature_c100 = TEMPERATURE_NO_DATA;
+            uint16_t humidity_rh100 = HUMIDITY_NO_DATA;
+            dht11_reading_t reading;
+            esp_err_t dht11_err = dht11_read(&dht11, &reading);
+            if (dht11_err == ESP_OK) {
+                temperature_c100 = reading.temperature_c100;
+                humidity_rh100 = reading.humidity_rh100;
+                ESP_LOGI(TAG, "Temperature: %.2f C, Humidity: %.2f %%RH",
+                         temperature_c100 / 100.0, humidity_rh100 / 100.0);
+            } else {
+                ESP_LOGW(TAG, "DHT11 read failed: %s", esp_err_to_name(dht11_err));
+            }
 
-            char hex_payload[9]; // 8 hex digits + null
-            snprintf(hex_payload, sizeof(hex_payload), "%02X%02X%02X%02X", payload[0], payload[1], payload[2], payload[3]);
+            uint8_t payload[LORA_PAYLOAD_SIZE];
+            build_lora_payload(payload, water_level, temperature_c100, humidity_rh100);
+
+            char hex_payload[LORA_PAYLOAD_SIZE * 2 + 1];
+            for (int i = 0; i < LORA_PAYLOAD_SIZE; i++) {
+                snprintf(&hex_payload[i * 2], 3, "%02X", payload[i]);
+            }
+            ESP_LOGI(TAG, "LoRa payload: %s", hex_payload);
 
             // Formar el comando AT+PSEND
+            char at_command[64];
             snprintf(at_command, sizeof(at_command), "AT+PSEND=%s", hex_payload);
 
             // Enviar comando al RAK3172
